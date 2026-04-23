@@ -1,6 +1,9 @@
 saved/
 recbole_outputs_smoke.jsonl
 eval_results_smoke.json
+recbole_outputs.jsonl
+recbole_full_run.log
+recbole_oov_users.jsonl
 amazon_books_smoke/
 amazon_books_smoke.inter
 amazon_books_smoke.item

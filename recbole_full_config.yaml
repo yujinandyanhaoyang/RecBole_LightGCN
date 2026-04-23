@@ -1,0 +1,71 @@
+# ══════════════════════════════════════════════════════════════════
+# recbole_full_config.yaml
+# 实验一正式配置 — LightGCN implemented in RecBole
+# 数据集：Amazon Books 5-core 子集
+# 硬件：NVIDIA A10 (24GB), 28GB RAM, 8核CPU
+# ══════════════════════════════════════════════════════════════════
+
+# ── 字段映射 ──────────────────────────────────────────────────────
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+RATING_FIELD: rating
+TIME_FIELD: timestamp
+
+# ── 加载字段 ──────────────────────────────────────────────────────
+load_col:
+  inter: [user_id, item_id, rating, timestamp]
+
+# ── 数据路径 ───────────────────────────────────────────────────────
+# RecBole 要求：data_path/dataset/dataset.inter + dataset.item
+# GPU服务器上需把 5core/ 下的文件放入此目录
+data_path: /mnt/workspace/experiment_1
+dataset: amazon_books_5core
+
+# ── 运行环境（A10 GPU）────────────────────────────────────────────
+use_gpu: true
+gpu_id: 0
+worker: 4
+seed: 2020
+reproducibility: true
+show_progress: true
+
+# ── 数据缓存 ──────────────────────────────────────────────────────
+save_dataset: true
+save_dataloaders: true
+
+# ── 数据集内部切分 ────────────────────────────────────────────────
+# Leave-one-out 时序切分，valid取最后一条，外部评估替代test
+eval_args:
+  split: {LS: valid_only}
+  group_by: user
+  order: TO
+  mode: full
+
+# ── 内部评估指标（early stopping 依据）───────────────────────────
+metrics: [NDCG, MRR, Hit]
+topk: 10
+valid_metric: NDCG@10
+
+# ── 负采样 ────────────────────────────────────────────────────────
+train_neg_sample_args:
+  distribution: uniform
+  sample_num: 1
+  alpha: 1.0
+  dynamic: false
+  candidate_num: 0
+
+# ── 训练超参（A10 GPU 优化）───────────────────────────────────────
+epochs: 200
+stopping_step: 10
+train_batch_size: 8192        # A10 24GB VRAM，可支持大batch
+eval_batch_size: 2048         # GPU评估加速
+learning_rate: 0.001
+weight_decay: 0
+
+# ── LightGCN 模型超参 ─────────────────────────────────────────────
+embedding_size: 128
+n_layers: 3
+reg_weight: 1e-5
+
+# ── checkpoint ────────────────────────────────────────────────────
+checkpoint_dir: ./saved/
