@@ -1,0 +1,12 @@
+saved/
+recbole_outputs_smoke.jsonl
+eval_results_smoke.json
+amazon_books_smoke/
+amazon_books_smoke.inter
+amazon_books_smoke.item
+ground_truth_smoke.jsonl
+recbole_test_users_smoke.jsonl
+__pycache__/
+log/
+log_tensorboard/
+.codex
